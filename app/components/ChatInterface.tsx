@@ -15,21 +15,21 @@ function ChatInterface() {
   const chatContainerRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling
   const iframeRef = useRef<HTMLIFrameElement | null>(null); // Ref for the iframe to manage link clicks
 
-  // Save chat to localStorage
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem("chatMessages", JSON.stringify(messages));
-    }
-  }, [messages]);
+  // Remove sessionStorage saving (no longer need this part)
+  // useEffect(() => {
+  //   if (messages.length > 0) {
+  //     sessionStorage.setItem("chatMessages", JSON.stringify(messages));
+  //   }
+  // }, [messages]);
 
-  // Load chat from localStorage on page load
-  useEffect(() => {
-    const storedMessages = localStorage.getItem("chatMessages");
-    if (storedMessages) {
-      const parsedMessages = JSON.parse(storedMessages);
-      setMessages(parsedMessages); // Update state using setMessages from useChat hook
-    }
-  }, [setMessages]); // Dependency to update only once on mount
+  // Remove sessionStorage loading (no longer need this part)
+  // useEffect(() => {
+  //   const storedMessages = sessionStorage.getItem("chatMessages");
+  //   if (storedMessages) {
+  //     const parsedMessages = JSON.parse(storedMessages);
+  //     setMessages(parsedMessages); // Update state using setMessages from useChat hook
+  //   }
+  // }, [setMessages]); // Dependency to update only once on mount
 
   // Update previewCode whenever new messages arrive, and extract code part
   useEffect(() => {
@@ -127,7 +127,8 @@ function ChatInterface() {
 
   // Clear chat
   const clearChat = () => {
-    localStorage.removeItem("chatMessages"); // Remove from localStorage
+    // Remove sessionStorage saving
+    // sessionStorage.removeItem("chatMessages"); // Remove from sessionStorage (no longer needed)
     setMessages([]); // Reset chat state
   };
 

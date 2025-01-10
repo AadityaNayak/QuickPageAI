@@ -3,7 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-const UsernameDropdown = ({ userName }: any) => {
+interface UsernameDropdownProps {
+  userName: string | null | undefined;
+}
+
+const UsernameDropdown = ({ userName }: UsernameDropdownProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Handle dropdown toggle
