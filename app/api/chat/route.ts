@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   let { messages } = await req.json();
   messages = [systemPrompt, ...messages]
 
-  console.log(messages)
+  // console.log(messages)
 
   // Get a language model
   const model = google('models/gemini-1.5-pro-001')
@@ -46,5 +46,6 @@ export async function POST(req: Request) {
   })
 
   // Respond with a streaming response
+  console.log(result.toDataStreamResponse().text)
   return result.toDataStreamResponse()
 }
