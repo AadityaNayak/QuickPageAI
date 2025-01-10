@@ -46,6 +46,5 @@ export async function POST(req: Request) {
   })
 
   // Respond with a streaming response
-  console.log(result.toDataStreamResponse().text)
   return result.toDataStreamResponse()
 }
