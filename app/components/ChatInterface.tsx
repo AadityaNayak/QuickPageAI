@@ -17,41 +17,46 @@ function ChatInterface() {
     api: "/api/chat", // Ensure this API route exists and is functional
   });
 
-  const [explanation, setExplanation] = useState<string | null>(null);
-  const [previewCode, setPreviewCode] = useState("");
+  const [explanationNewMessage, setExplanationNewMessage] = useState<
+    string | null
+  >(null);
+  const [previewCodeNewMessage, setpreviewCodeNewMessage] = useState("");
+  const [previewIndex, setpreviewIndex] = useState<number>(0);
+
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const endOfChatRef = useRef<HTMLDivElement | null>(null);
 
+  // Function to extract explanation from the message
+  const extractExplanation = (message: string): string | null => {
+    const explanationMatch = message.match(
+      /\[Explanation starts\]([\s\S]*?)\[Explanation ends\]/
+    );
+    return explanationMatch ? explanationMatch[1].trim() : null;
+  };
+
+  // Function to extract code (HTML) from the message
+  const extractCode = (message: string): string => {
+    const codeMatch = message?.match(/<!DOCTYPE html>[\s\S]*?<\/html>/);
+    return codeMatch ? codeMatch[0] : "";
+  };
+
+  // Update the explanation and preview code for each message whenever messages change
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1]?.content;
+    messages.forEach((message, index) => {
+      const lastMessageContent = message.content;
 
-    if (lastMessage) {
-      // Extract explanation from the assistant's response
-      const explanationMatch = lastMessage.match(
-        /\[Explanation starts\]([\s\S]*?)\[Explanation ends\]/ // Match across newlines, any characters
-      );
+      if (lastMessageContent) {
+        // Extract explanation and preview code using the new functions
+        const newExplanation = extractExplanation(lastMessageContent);
+        const newCode = extractCode(lastMessageContent);
 
-      // Extract HTML code from the assistant's response
-      const codeMatch = lastMessage.match(/<!DOCTYPE html>[\s\S]*?<\/html>/); // Match HTML block (including multi-line)
+        setExplanationNewMessage(newExplanation);
+        setpreviewCodeNewMessage(newCode);
 
-      if (explanationMatch && explanationMatch[1]) {
-        setExplanation(explanationMatch[1].trim());
-      } else {
-        setExplanation(null); // No explanation found
+        if (messages?.length) setpreviewIndex(messages.length - 1);
       }
-
-      if (codeMatch && codeMatch[0]) {
-        setPreviewCode(codeMatch[0]);
-      }
-
-      // Smooth auto-scroll to the bottom when a new message is added
-      if (endOfChatRef.current) {
-        endOfChatRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-        });
-      }
-    }
+      console.log(messages);
+    });
   }, [messages]);
 
   const onSubmitHandler = async (e: React.FormEvent) => {
@@ -91,68 +96,86 @@ function ChatInterface() {
             Chat
           </h2>
           <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
+            {messages.map((message, index) => {
+              return (
                 <div
-                  className={`inline-block px-4 py-2 rounded-lg max-w-full ${
-                    message.role === "user"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-800 text-white dark:bg-gray-700"
+                  key={index}
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {message.role === "user" ? (
-                    message.content
-                  ) : (
-                    <div>
-                      {/* Display Explanation if available */}
-                      {message.content && !isLoading ? (
-                        explanation && (
-                          <div className="mb-4">
-                            <p className="text-gray-600 dark:text-gray-300">
-                              {explanation}
-                            </p>
-                          </div>
-                        )
-                      ) : (
-                        isLoading && (
-                          <div className="flex justify-center items-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"></div>
-                          </div>
-                        )
-                      )}
+                  <div
+                    className={`inline-block px-4 py-2 rounded-lg max-w-full ${
+                      message.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-800 text-white dark:bg-gray-700"
+                    }`}
+                  >
+                    {message.role === "user" ? (
+                      message.content
+                    ) : (
+                      <div>
+                        {/* Display Explanation if available */}
+                        {(message.content && !isLoading) ||
+                        index != messages.length - 1
+                          ? explanationNewMessage && (
+                              <div className="mb-4">
+                                <p className="text-gray-600 dark:text-gray-300">
+                                  {extractExplanation(message.content)}
+                                </p>
+                              </div>
+                            )
+                          : isLoading && (
+                              <div className="flex justify-center items-center">
+                                <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"></div>
+                              </div>
+                            )}
 
-                      {/* Display the HTML code */}
-                      {!isLoading && previewCode && (
-                        <SyntaxHighlighter
-                          language="html"
-                          style={tomorrowNight}
-                          customStyle={{ borderRadius: "8px", padding: "1rem" }}
-                        >
-                          {previewCode}
-                        </SyntaxHighlighter>
-                      )}
-
-                      {/* Download Button for the HTML code */}
-                      {!isLoading && previewCode && (
-                        <div className="mt-2 flex justify-end">
-                          <button
-                            onClick={() => downloadCode(previewCode)}
-                            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+                        {/* Display the HTML code */}
+                        {(!isLoading && previewCodeNewMessage) ||
+                        index != messages.length - 1 ? (
+                          <SyntaxHighlighter
+                            language="html"
+                            style={tomorrowNight}
+                            customStyle={{
+                              borderRadius: "8px",
+                              padding: "1rem",
+                            }}
                           >
-                            Download Code
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                            {extractCode(message.content)}
+                          </SyntaxHighlighter>
+                        ) : (
+                          ""
+                        )}
+
+                        {/* Download Button for the HTML code */}
+                        {!isLoading && previewCodeNewMessage && (
+                          <div className="mt-2 flex justify-between space-x-4">
+                            {/* Download Code Button */}
+                            <button
+                              onClick={() =>
+                                downloadCode(extractCode(message.content))
+                              }
+                              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+                            >
+                              Download Code
+                            </button>
+
+                            {/* Preview Code Button */}
+                            <button
+                              onClick={() => setpreviewIndex(index)}
+                              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+                            >
+                              Preview Code
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           {/* This is the reference point for smooth scrolling */}
           <div ref={endOfChatRef}></div>
@@ -169,21 +192,22 @@ function ChatInterface() {
             </div>
           ) : (
             <iframe
-              srcDoc={`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generated HTML</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-  ${previewCode}
-</body>
-</html>`}
+              srcDoc={`${extractCode(messages[previewIndex]?.content)}`}
               className="w-full h-[75vh] border rounded dark:border-gray-700"
-              sandbox="allow-scripts allow-same-origin"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               title="Live Preview"
+              onLoad={(e) => {
+                const iframe = e.target as HTMLIFrameElement; // Type assertion to HTMLIFrameElement
+                const iframeDoc = iframe.contentWindow?.document; // Accessing contentWindow
+
+                if (iframeDoc) {
+                  const links = iframeDoc.querySelectorAll("a");
+                  links.forEach((link) => {
+                    link.setAttribute("href", "#"); // Disable any redirects by changing href to #
+                    link.setAttribute("onclick", "return false"); // Prevent the default click action
+                  });
+                }
+              }}
             />
           )}
         </div>
