@@ -7,7 +7,7 @@ export function ChatbotBtn() {
         type="button"
         className="flex items-center space-x-2 text-gray-800 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:focus:ring-gray-600"
       >
-        {/* Chatbot Icon */}
+        {/* Chatbot Icon Container */}
         <div className="flex items-center justify-center bg-gray-200 w-9 h-9 rounded-l dark:bg-gray-700">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -22,6 +22,7 @@ export function ChatbotBtn() {
             ></path>
           </svg>
         </div>
+        {/* Chatbot Button Text */}
         <span>Chatbot</span>
       </button>
     </Link>

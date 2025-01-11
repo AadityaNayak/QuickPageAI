@@ -1,2 +1,5 @@
-import { handlers } from "@/app/auth"; // Referring to the auth.ts we just created
+// Import handlers for authentication-related routes
+import { handlers } from "@/app/auth"; 
+
+// Export the GET and POST methods from the imported handlers
 export const { GET, POST } = handlers;

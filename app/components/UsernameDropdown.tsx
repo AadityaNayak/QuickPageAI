@@ -10,7 +10,7 @@ interface UsernameDropdownProps {
 const UsernameDropdown = ({ userName }: UsernameDropdownProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Handle dropdown toggle
+  // Toggle the visibility of the dropdown
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
@@ -43,7 +43,7 @@ const UsernameDropdown = ({ userName }: UsernameDropdownProps) => {
                 onClick={() => setIsDropdownOpen(false)}
                 className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-               Go to Profile
+                Go to Profile
               </Link>
             </li>
           </ul>

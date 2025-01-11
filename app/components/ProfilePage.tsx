@@ -14,7 +14,7 @@ const ProfilePage = async () => {
           {session?.user ? (
             <div className="flex flex-col md:flex-row justify-center items-center md:items-center space-y-8 md:space-y-0">
               {/* Profile Image Section */}
-              <div className="profile-image bg-white dark:bg-gray-800 rounded-full shadow-lg mb-8 md:mb-0 flex justify-center items-center overflow-hidden ">
+              <div className="profile-image bg-white dark:bg-gray-800 rounded-full shadow-lg mb-8 md:mb-0 flex justify-center items-center overflow-hidden">
                 <img
                   src={session.user.image || "/default-profile.png"}
                   alt={session?.user?.name || "User"}

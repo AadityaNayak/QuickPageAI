@@ -2,7 +2,7 @@ import React from "react";
 import { auth } from "@/app/auth";
 
 const LandingPage = async () => {
-  const session = await auth();
+  const session = await auth(); // Fetch user session
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
       <main className="flex-grow">
