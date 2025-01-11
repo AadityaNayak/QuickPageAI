@@ -42,7 +42,7 @@ function ChatInterface() {
 
   // Update the explanation and preview code for each message whenever messages change
   useEffect(() => {
-    messages.forEach((message, index) => {
+    messages.forEach((message) => {
       const lastMessageContent = message.content;
 
       if (lastMessageContent) {
@@ -55,7 +55,6 @@ function ChatInterface() {
 
         if (messages?.length) setpreviewIndex(messages.length - 1);
       }
-      console.log(messages);
     });
   }, [messages]);
 
